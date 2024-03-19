@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 from .recognition import get_recognizer, get_text
 from .utils import group_text_box, get_image_list, calculate_md5, get_paragraph,\
                    download_and_unzip, printProgressBar, diff, reformat_input,\
@@ -33,7 +32,7 @@ class Reader(object):
                  user_network_directory=None, detect_network="craft", 
                  recog_network='standard', download_enabled=True, 
                  detector=True, recognizer=True, verbose=True, 
-                 quantize=True, cudnn_benchmark=False):
+                 quantize=True, cudnn_benchmark=False,current_gpu="cuda:0"):
         """Create an EasyOCR Reader
 
         Parameters:
@@ -53,7 +52,7 @@ class Reader(object):
         """
         self.verbose = verbose
         self.download_enabled = download_enabled
-
+        self.current_gpu = current_gpu
         self.model_storage_directory = MODULE_PATH + '/model'
         if model_storage_directory:
             self.model_storage_directory = model_storage_directory
@@ -71,7 +70,7 @@ class Reader(object):
                 LOGGER.warning('Using CPU. Note: This module is much faster with a GPU.')
         elif gpu is True:
             if torch.cuda.is_available():
-                self.device = 'cuda'
+                self.device = self.current_gpu
             elif torch.backends.mps.is_available():
                 self.device = 'mps'
             else:

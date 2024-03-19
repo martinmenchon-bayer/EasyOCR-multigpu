@@ -83,7 +83,8 @@ def get_detector(trained_model, device='cpu', quantize=True, cudnn_benchmark=Fal
                 pass
     else:
         net.load_state_dict(copyStateDict(torch.load(trained_model, map_location=device)))
-        net = torch.nn.DataParallel(net).to(device)
+        device_ids = [x for x in range(torch.cuda.device_count())]
+        net = torch.nn.DataParallel(net,device_ids = device_ids).cuda()
         cudnn.benchmark = cudnn_benchmark
 
     net.eval()
